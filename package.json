@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.5",
+    "stt": "*"
+  },
+  "name": "coquisttjs",
+  "description": "Coqui runtime transcript NodeJs client. Some examples and notes.",
+  "version": "0.0.1",
+  "main": "coquistt.js",
+  "scripts": {
+    "test": "testPerformances.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solyarisoftware/CoquiSttJs.git"
+  },
+  "keywords": [
+    "Coqui",
+    "speech",
+    "recognition",
+    "speech-to-text",
+    "STT",
+    "ASR"
+  ],
+  "author": "Giorgio Robino <giorgio.robino@gmail.com> (http://convcomp.it/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/solyarisoftware/CoquiSttJs/issues"
+  },
+  "homepage": "https://github.com/solyarisoftware/CoquiSttJs#readme"
+}
