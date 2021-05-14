@@ -108,71 +108,124 @@ Stream size                              : 64.0 KiB (100%)
 
 ## Run the test
 
-The bash script `test_elapsed.sh` compares elapsed times 
+The bash script `testLatencies.sh` compares elapsed times 
 of transcript of the audio file `./audio/4507-16021-0012.wav` 
-(corresponding to text *why should one halt on the way*), in 3 cases:
+(corresponding to text *why should one halt on the way*), in 2 cases:
 
-- using a bash script running the CLI `deepspeech` official client [deepspeech_cli.sh](deepspeech_cli.sh) 
-- using the nodejs "spawn" client [deepSpeechTranscriptSpawn.js](deepSpeechTranscriptSpawn.js)
-- using the nodejs native client [deepSpeechTranscriptNative.js](deepSpeechTranscriptNative.js)
+- using a bash script running the CLI `stt` official client 
+- using the nodejs native client [stt.js](sttjs.js)
 
 ```
-(deepspeech-venv) $ test_elapsed.sh
+(venv-stt) $ testLatencies.sh
 ```
 ```
 
-deepspeech_cli
+(venv-stt) $ testLatencies.sh
 
-Loading model from file models/deepspeech-0.9.3-models.pbmm
-TensorFlow: v2.3.0-6-g23ad988
-Coqui STT: v0.9.3-0-gf2e9c85
-2021-01-31 11:04:53.878150: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN)to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+#
+# testLatencies.sh
+# test elapsed time / resopurce (using /urs/bin/time)
+# and CPU cores usage (using pidstat) in different cases
+#
+
+
+#
+# Test 1: stt cli command
+#
+
+Linux 5.8.0-53-generic (giorgio-HP-Laptop-17-by1xxx) 	14/05/2021 	_x86_64_	(8 CPU)
+Loading model from file models/coqui-stt-0.9.3-models.pbmm
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+2021-05-14 18:27:52.509167: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN)to use the following CPU instructions in performance-critical operations:  AVX2 FMA
 To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
-Loaded model in 0.0121s.
-Loading scorer from files models/deepspeech-0.9.3-models.scorer
-Loaded scorer in 0.000152s.
+Loaded model in 0.00898s.
+Loading scorer from files models/coqui-stt-0.9.3-models.scorer
+Loaded scorer in 0.000106s.
 Running inference.
-why should one halt on the way
-Inference took 1.527s for 2.735s audio file.
 
-real	0m1,798s
-user	0m2,483s
-sys	0m0,495s
+18:27:52      UID       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
+18:27:53     1000    164565  158,00   56,00    0,00    0,00  214,00     7  stt
+experience proves this
+Inference took 1.115s for 1.975s audio file.
 
-deepSpeechTranscriptSpawn
+Average:     1000    164565  158,00   56,00    0,00    0,00  214,00     -  stt
+	Command being timed: "pidstat 1 -u -e stt --model models/coqui-stt-0.9.3-models.pbmm --scorer models/coqui-stt-0.9.3-models.scorer --audio audio/2830-3980-0043.wav"
+	User time (seconds): 0.00
+	System time (seconds): 0.00
+	Percent of CPU this job got: 0%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:01.35
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2260
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 113
+	Voluntary context switches: 3
+	Involuntary context switches: 0
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
 
-why should one halt on the way
+#
+# Test 2: node stt
+#
 
-real	0m1,832s
-user	0m2,509s
-sys	0m0,544s
-
-deepSpeechTranscriptNative
-
-usage: node deepSpeechTranscriptNative [<model pbmm file>] [<model scorer file>] [<audio file>]
-using: node deepSpeechTranscriptNative ./models/deepspeech-0.9.3-models.pbmm ./models/deepspeech-0.9.3-models.scorer ./audio/4507-16021-0012.wav
-
-TensorFlow: v2.3.0-6-g23ad988
-Coqui STT: v0.9.3-0-gf2e9c85
-2021-01-31 11:05:01.371379: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN)to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+Linux 5.8.0-53-generic (giorgio-HP-Laptop-17-by1xxx) 	14/05/2021 	_x86_64_	(8 CPU)
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+2021-05-14 18:27:58.763404: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN)to use the following CPU instructions in performance-critical operations:  AVX2 FMA
 To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
 
-pbmm      : ./models/deepspeech-0.9.3-models.pbmm
-scorer    : ./models/deepspeech-0.9.3-models.scorer
-elapsed   : 11ms
+pbmm                 : models/coqui-stt-0.9.3-models.pbmm
+scorer               : models/coqui-stt-0.9.3-models.scorer
+elapsed              : 9ms
 
-audio file: ./audio/4507-16021-0012.wav
-transcript: why should one halt on the way
-elapsed   : 1553ms
 
-real	0m1,669s
-user	0m1,928s
-sys	0m0,103s
+18:27:58      UID       PID    %usr %system  %guest   %wait    %CPU   CPU  Command
+18:27:59     1000    164594  114,00    8,00    0,00    0,00  122,00     2  node
+audio file           : audio/2830-3980-0043.wav
+transcript           : experience proves this
+elapsed              : 1110ms
+
+free model elapsed   : 10ms
+
+
+Average:     1000    164594  114,00    8,00    0,00    0,00  122,00     -  node
+	Command being timed: "pidstat 1 -u -e node stt models/coqui-stt-0.9.3-models.pbmm models/coqui-stt-0.9.3-models.scorer audio/2830-3980-0043.wav"
+	User time (seconds): 0.00
+	System time (seconds): 0.00
+	Percent of CPU this job got: 0%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:01.23
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2260
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 113
+	Voluntary context switches: 3
+	Involuntary context switches: 0
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
 ```
 
-As expected, the native client transcript elapsed time (1553ms), is much better than the spawn client (1832ms).
 
-## Disclaimer 
+## Note 
 
 IMPORTANT: unfortunately npm package `deepspeech` cause a crash using node version 16.0.0.
 See [issue](https://github.com/mozilla/DeepSpeech/issues/3642).
@@ -182,7 +235,7 @@ By example I had success with Node version 14.16.1.
 
 ## Changelog
 
-- 0.0.1 test script testPerformances.sh improved
+- 0.0.3 test script testPerformances.sh updated 
 
 
 ## To do
