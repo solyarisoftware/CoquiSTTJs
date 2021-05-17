@@ -21,22 +21,45 @@ const STT = require('stt')
  * load the model 
  * with specified pbmm and scorer files
  *
+ * @function 
+ * @async
+ *
  * @param {String} modelPath 
  * @param {String} scorerPath
  *
- * @return {Object} STT Model
+ * @return {STTModelObject} STT Model object
  *
  * TODO
- * - add metadata object as parameter
+ * add metadata object as parameter
+ *
+ * WARNING
+ * In facts the STT Model creation is a syncronous elaboration. 
  *
  */
 function loadModel(modelPath, scorerPath) {
 
-  const model = new STT.Model(modelPath)
+  return new Promise( (resolve, reject) => {
+
+    let model
+
+    try {
+      model = new STT.Model(modelPath)
+    }
+    catch (error) { 
+      reject(`model.stt error: ${error}`) 
+    } 
   
-  model.enableExternalScorer(scorerPath)
-  
-  return model
+    try {
+      model.enableExternalScorer(scorerPath)
+    }
+    catch (error) { 
+      reject(`model.enableExternalScorer error: ${error}`) 
+    } 
+
+    resolve(model)
+
+  })
+
 }  
 
 
@@ -49,7 +72,17 @@ function loadModel(modelPath, scorerPath) {
  *
  */
 function freeModel(model) {
-  STT.FreeModel(model)
+  return new Promise( (resolve, reject) => {
+  
+    try {
+      STT.FreeModel(model)
+      resolve()
+    }  
+    catch (error) { 
+      reject(`STT.FreeModel error: ${error}`) 
+    } 
+
+  })  
 }  
 
 
@@ -68,19 +101,23 @@ function freeModel(model) {
  *
  * @return {Promise<String>}     text transcript 
  */ 
-async function transcriptBuffer(audioBuffer, model) {
+function transcriptBuffer(audioBuffer, model) {
   
-  // WARNING: 
-  // no audioBuffer validation is done.
-  // The audio fle must be a WAV audio in raw format.
+  return new Promise( (resolve, reject) => {
+
+    // WARNING: 
+    // no audioBuffer validation is done.
+    // The audio fle must be a WAV audio in raw format.
 	
-  try { 
-    const transcript = model.stt(audioBuffer)
-    return transcript
-  }
-  catch (error) { 
-    throw `model.stt error: ${error}` 
-  } 
+    try { 
+      const transcript = model.stt(audioBuffer)
+      resolve(transcript)
+    }
+    catch (error) { 
+      reject(`model.stt error: ${error}`) 
+    }
+
+  })
     
 }
 
@@ -101,10 +138,9 @@ async function transcriptBuffer(audioBuffer, model) {
  * @return {Promise<String>}     text transcript 
  */ 
 async function transcriptFile(audioFile, model) {
-  
+
   let audioBuffer
 
-  // read the Wav file in memory
   try { 
     audioBuffer = await fs.readFile(audioFile) 
   }  
@@ -116,14 +152,15 @@ async function transcriptFile(audioFile, model) {
   // no audioBuffer validation is done.
   // The audio fle must be a WAV audio in raw format.
 	
-  try { 
-    const transcript = model.stt(audioBuffer)
-    return transcript
-  }
-  catch (error) { 
-    throw `model.stt error: ${error}` 
-  } 
-    
+  return new Promise( (resolve, reject) => {
+    try { 
+      const transcript = model.stt(audioBuffer)
+      resolve(transcript)
+    }
+    catch (error) { 
+      reject(`model.stt error: ${error}`) 
+    } 
+  })
 }
 
 
@@ -148,7 +185,7 @@ async function main() {
   //
   // load STT model
   //
-  const model = loadModel(modelPath, scorerPath)
+  const model = await loadModel(modelPath, scorerPath)
 
   const stopModel = new Date()
 
@@ -156,12 +193,14 @@ async function main() {
   console.log(`pbmm                 : ${modelPath}`)
   console.log(`scorer               : ${scorerPath}`)
   console.log(`elapsed              : ${stopModel - startModel}ms\n`)
- 
-  const startTranscript = new Date()
+  
+  //console.dir(model)
 
   //
   // transcript an audio file
   //
+  const startTranscript = new Date()
+
   const result = await transcriptFile(audioFile, model)
 
   const stopTranscript = new Date()
@@ -170,9 +209,12 @@ async function main() {
   console.log(`transcript           : ${result}`)
   console.log(`elapsed              : ${stopTranscript - startTranscript}ms\n`)
 
+  //
+  // free model memory
+  //
   const startFreeModel = new Date()
 
-  freeModel(model)
+  await freeModel(model)
 
   const stopFreeModel = new Date()
   
