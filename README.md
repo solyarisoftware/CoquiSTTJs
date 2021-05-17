@@ -17,10 +17,11 @@ You want to access Coqui STT speech to text transcriptionm from nodeJs.
 
 This project supplies to nodeJs developers a simple [API interface](stt.js) on top of the Coqui STT native NodeJs binding. 
 Here the current API javascript endpoints:
-- `function loadModel(modelFile, scorerFile)`
-- `async function transcriptBuffer(audioBuffer, model)`
-- `async function transcriptFile(audioFile, model)`
-- `function freeModel(model)`
+
+- `loadModel(modelFile, scorerFile)`
+- `transcriptBuffer(audioBuffer, model)`
+- `transcriptFile(audioFile, model)`
+- `freeModel(model)`
  
 
 ## Install
@@ -55,17 +56,11 @@ Here the current API javascript endpoints:
    ```
 
 3. Install the official Coqui STT npm package
+
    ```bash
    cd coquiSTTjs
    npm install stt
    ```
-
-
-## Coqui STT official native NodeJs API
-
-- [Native client source code](https://github.com/coqui-ai/STT/tree/main/native_client/javascript)
-- [API Documentation](https://stt.readthedocs.io/en/latest/NodeJS-API.html)
-- [Usage Examples](https://github.com/coqui-ai/STT-examples#javascript)
 
 
 ## Notes 
@@ -90,8 +85,9 @@ Here the current API javascript endpoints:
   rec -f S16_BE -r 16000 -c 1 my_recording.wav
   ```
   ```
-  
   mediainfo my_recording.wav
+  ```
+  ```
   General
   Complete name                            : my_recording.wav
   Format                                   : Wave
@@ -111,12 +107,13 @@ Here the current API javascript endpoints:
   Sampling rate                            : 16.0 kHz
   Bit depth                                : 16 bits
   Stream size                              : 64.0 KiB (100%)
-```
+  ```
 
+## Coqui STT official native NodeJs API
 
-## Changelog
-
-- 0.0.4 test script testPerformances.sh updated 
+- [Native client source code](https://github.com/coqui-ai/STT/tree/main/native_client/javascript)
+- [API Documentation](https://stt.readthedocs.io/en/latest/NodeJS-API.html)
+- [Usage Examples](https://github.com/coqui-ai/STT-examples#javascript)
 
 
 ## To do
