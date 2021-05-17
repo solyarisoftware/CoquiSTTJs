@@ -1,7 +1,7 @@
 {
   "name": "coquisttjs",
   "description": "Coqui STT runtime transcript NodeJs client. With usage examples and tests.",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "stt.js",
   "scripts": {
     "test": "tests/testPerformances.js"

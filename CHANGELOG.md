@@ -1,6 +1,9 @@
 # Changelog
 
-- 0.0.5 test script testPerformances.sh updated 
+- 0.0.6
+  - docuemenattion updated
+  - npm package published
+  - test script testPerformances.sh updated 
 
 ---
 

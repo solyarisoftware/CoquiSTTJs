@@ -120,6 +120,43 @@ Average:     1000     23751  111,00   10,00    0,00    0,00  121,00     -  node
 
 ```
 
+## Record audio files
+
+Coqui STT requires a 16bit 16 KHz mono WAV input audio file.
+```
+sudo apt install sox
+sudo apt install mediainfo
+```
+
+To record such a file:
+```
+rec -f S16_BE -r 16000 -c 1 my_recording.wav
+```
+```
+mediainfo my_recording.wav
+```
+```
+General
+Complete name                            : my_recording.wav
+Format                                   : Wave
+File size                                : 64.0 KiB
+Duration                                 : 2 s 48 ms
+Overall bit rate mode                    : Constant
+Overall bit rate                         : 256 kb/s
+
+Audio
+Format                                   : PCM
+Format settings                          : Little / Signed
+Codec ID                                 : 1
+Duration                                 : 2 s 48 ms
+Bit rate mode                            : Constant
+Bit rate                                 : 256 kb/s
+Channel(s)                               : 1 channel
+Sampling rate                            : 16.0 kHz
+Bit depth                                : 16 bits
+Stream size                              : 64.0 KiB (100%)
+```
+
 ---
 
 [top](#) | [home](../README.md)
