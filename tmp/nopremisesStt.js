@@ -38,23 +38,27 @@ const STT = require('stt')
  */
 function loadModel(modelPath, scorerPath) {
 
-  let model
+  return new Promise( (resolve, reject) => {
 
-  try {
-    model = new STT.Model(modelPath)
-  }
-  catch (error) { 
-    throw (`model.stt: ${error}`) 
-  } 
+    let model
 
-  try {
-    model.enableExternalScorer(scorerPath)
-  }
-  catch (error) { 
-    throw `model.enableExternalScorer: ${error}`
-  } 
+    try {
+      model = new STT.Model(modelPath)
+    }
+    catch (error) { 
+      reject(`model.stt error: ${error}`) 
+    } 
+  
+    try {
+      model.enableExternalScorer(scorerPath)
+    }
+    catch (error) { 
+      reject(`model.enableExternalScorer error: ${error}`) 
+    } 
 
-  return model
+    resolve(model)
+
+  })
 
 }  
 
@@ -68,14 +72,17 @@ function loadModel(modelPath, scorerPath) {
  *
  */
 function freeModel(model) {
+  return new Promise( (resolve, reject) => {
   
-  try {
-    STT.FreeModel(model)
-  }  
-  catch (error) { 
-    throw `STT.FreeModel error: ${error}`  
-  } 
+    try {
+      STT.FreeModel(model)
+      resolve()
+    }  
+    catch (error) { 
+      reject(`STT.FreeModel error: ${error}`) 
+    } 
 
+  })  
 }  
 
 
@@ -92,21 +99,26 @@ function freeModel(model) {
  * @param {Buffer}               audioBuffer
  * @param {STTMemoryModelObject} model
  *
- * @return {String}              text transcript 
+ * @return {Promise<String>}     text transcript 
  */ 
 function transcriptBuffer(audioBuffer, model) {
   
-  // WARNING: 
-  // no audioBuffer validation is done.
-  // The audio fle must be a WAV audio in raw format.
+  return new Promise( (resolve, reject) => {
 
-  try { 
-    return model.stt(audioBuffer)
-  }
-  catch (error) { 
-    throw `model.stt error: ${error}` 
-  }
+    // WARNING: 
+    // no audioBuffer validation is done.
+    // The audio fle must be a WAV audio in raw format.
+	
+    try { 
+      const transcript = model.stt(audioBuffer)
+      resolve(transcript)
+    }
+    catch (error) { 
+      reject(`model.stt error: ${error}`) 
+    }
 
+  })
+    
 }
 
 
@@ -133,20 +145,22 @@ async function transcriptFile(audioFile, model) {
     audioBuffer = await fs.readFile(audioFile) 
   }  
   catch (error) { 
-    throw `readFile error: ${error}` 
+    throw `readFile: ${error}` 
   } 
 
   // WARNING: 
   // no audioBuffer validation is done.
   // The audio fle must be a WAV audio in raw format.
 	
-  try { 
-    return model.stt(audioBuffer)
-  }
-  catch (error) { 
-    throw `model.stt error: ${error}`
-  } 
-
+  return new Promise( (resolve, reject) => {
+    try { 
+      const transcript = model.stt(audioBuffer)
+      resolve(transcript)
+    }
+    catch (error) { 
+      reject(`model.stt: ${error}`) 
+    } 
+  })
 }
 
 
@@ -171,7 +185,7 @@ async function main() {
   //
   // load STT model
   //
-  const model = loadModel(modelPath, scorerPath)
+  const model = await loadModel(modelPath, scorerPath)
 
   const stopModel = new Date()
 
@@ -200,7 +214,7 @@ async function main() {
   //
   const startFreeModel = new Date()
 
-  freeModel(model)
+  await freeModel(model)
 
   const stopFreeModel = new Date()
   
