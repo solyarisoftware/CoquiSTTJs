@@ -13,7 +13,11 @@
 
 const fs = require('fs').promises
 const path = require('path')
+
 const STT = require('stt')
+
+const { runWorker, activeWorkers } = require('./lib/runWorker')
+
 
 /**
  * loadmodel
@@ -22,7 +26,7 @@ const STT = require('stt')
  * with specified pbmm and scorer files
  *
  * @function 
- * @async
+ * @sync
  *
  * @param {String} modelPath 
  * @param {String} scorerPath
@@ -33,32 +37,28 @@ const STT = require('stt')
  * add metadata object as parameter
  *
  * WARNING
- * In facts the STT Model creation is a syncronous elaboration. 
+ * The STT Model creation is a syncronous elaboration. 
  *
  */
 function loadModel(modelPath, scorerPath) {
 
-  return new Promise( (resolve, reject) => {
+  let model
 
-    let model
+  try {
+    model = new STT.Model(modelPath)
+  }
+  catch (error) { 
+    throw `model.stt error: ${error}`
+  } 
 
-    try {
-      model = new STT.Model(modelPath)
-    }
-    catch (error) { 
-      reject(`model.stt error: ${error}`) 
-    } 
-  
-    try {
-      model.enableExternalScorer(scorerPath)
-    }
-    catch (error) { 
-      reject(`model.enableExternalScorer error: ${error}`) 
-    } 
+  try {
+    model.enableExternalScorer(scorerPath)
+  }
+  catch (error) { 
+    throw `model.enableExternalScorer error: ${error}`
+  } 
 
-    resolve(model)
-
-  })
+  return model
 
 }  
 
@@ -72,17 +72,14 @@ function loadModel(modelPath, scorerPath) {
  *
  */
 function freeModel(model) {
-  return new Promise( (resolve, reject) => {
   
-    try {
-      STT.FreeModel(model)
-      resolve()
-    }  
-    catch (error) { 
-      reject(`STT.FreeModel error: ${error}`) 
-    } 
+  try {
+    STT.FreeModel(model)
+  }  
+  catch (error) { 
+    throw `STT.FreeModel error: ${error}`
+  } 
 
-  })  
 }  
 
 
@@ -92,33 +89,23 @@ function freeModel(model) {
  * return the speech to text (transcript) 
  * of the audio contained in the specified audio PCM buffer 
  *
+ * Runs Coqui STT model.stt on a worker thread 
  * The function is async to avoid the caller thread is blocked
- * - during audio file reading
- * - but especially during the STT engine processing.
+ *
+ * @function
+ * @async
  *
  * @param {Buffer}               audioBuffer
- * @param {STTMemoryModelObject} model
+ * @param {STTMemoryModelObject} STT model
  *
  * @return {Promise<String>}     text transcript 
  */ 
-function transcriptBuffer(audioBuffer, model) {
-  
-  return new Promise( (resolve, reject) => {
+async function transcriptBuffer(audioBuffer, model) {
 
-    // WARNING: 
-    // no audioBuffer validation is done.
-    // The audio fle must be a WAV audio in raw format.
-	
-    try { 
-      const transcript = model.stt(audioBuffer)
-      resolve(transcript)
-    }
-    catch (error) { 
-      reject(`model.stt error: ${error}`) 
-    }
+  const WORKER_FILENAME = './lib/workerTranscriptBuffer.js'
 
-  })
-    
+  return runWorker( WORKER_FILENAME, {audioBuffer, model} )
+
 }
 
 
@@ -130,7 +117,10 @@ function transcriptBuffer(audioBuffer, model) {
  *
  * The function is async to avoid the caller thread is blocked
  * - during audio file reading
- * - but especially during the STT engine processing.
+ * - during the STT engine processing on a worker thread.
+ *
+ * @function
+ * @async
  *
  * @param {String}               audioFile
  * @param {STTMemoryModelObject} model
@@ -148,19 +138,7 @@ async function transcriptFile(audioFile, model) {
     throw `readFile error: ${error}` 
   } 
 
-  // WARNING: 
-  // no audioBuffer validation is done.
-  // The audio fle must be a WAV audio in raw format.
-	
-  return new Promise( (resolve, reject) => {
-    try { 
-      const transcript = model.stt(audioBuffer)
-      resolve(transcript)
-    }
-    catch (error) { 
-      reject(`model.stt error: ${error}`) 
-    } 
-  })
+  return transcriptBuffer(audioBuffer, model) 
 }
 
 
@@ -183,9 +161,9 @@ async function main() {
   const startModel = new Date()
 
   //
-  // load STT model
+  // load Coqui STT model
   //
-  const model = await loadModel(modelPath, scorerPath)
+  const model = loadModel(modelPath, scorerPath)
 
   const stopModel = new Date()
 
@@ -214,7 +192,7 @@ async function main() {
   //
   const startFreeModel = new Date()
 
-  await freeModel(model)
+  freeModel(model)
 
   const stopFreeModel = new Date()
   

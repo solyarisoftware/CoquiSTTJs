@@ -77,8 +77,9 @@ Here the current API javascript endpoints:
 
 - The project is in a very draft stage.
 - Complete the high-level API interface. E.g. including metadata as parameters
-- Develop a (web) multi-process or multi-thread server architecture. 
-  See: [How to use DeepSpeech for a text-to-speech server (in NodeJs)](https://discourse.mozilla.org/t/how-to-use-deepspeech-for-a-text-to-speech-server-in-nodejs/79636/2) 
+- Develop a (web) multi-process or multi-thread server architecture. See: 
+  - [How to use Coqui STT for a text-to-speech server (in NodeJs)](https://github.com/coqui-ai/STT/discussions/1870) 
+  - [How to use DeepSpeech for a text-to-speech server (in NodeJs)](https://discourse.mozilla.org/t/how-to-use-deepspeech-for-a-text-to-speech-server-in-nodejs/79636/2)
 
 
 ## License

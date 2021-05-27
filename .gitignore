@@ -2,4 +2,5 @@ audio/
 models/
 node_modules/
 venv-stt/
+tmp
 
