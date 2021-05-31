@@ -12,8 +12,8 @@
  *
  */ 
 const fs = require('fs')
-const { setTimer, getTimer } = require('./chronos')
-const { runThread } = require('./threads')
+const { setTimer, getTimer } = require('../lib/chronos')
+const { runThread } = require('../lib/threads')
 
 /**
  * unit test
@@ -26,7 +26,7 @@ async function master() {
   const audioBuffer = fs.readFileSync(sourceFile, { flag: 'rs+' } )
 
   const workerData = { audioBuffer }
-  const workerFile = './worker.js'
+  const workerFile = './worker_thread.js'
 
   try {
     setTimer('runThread')

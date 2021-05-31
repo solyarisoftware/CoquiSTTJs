@@ -1,7 +1,7 @@
 {
   "name": "coquisttjs",
   "description": "Coqui STT runtime transcript NodeJs client. With usage examples and tests.",
-  "version": "0.0.6",
+  "version": "0.0.11",
   "main": "stt.js",
   "scripts": {
     "test": "tests/testPerformances.js"
@@ -22,10 +22,27 @@
     "STT",
     "ASR"
   ],
-  "author": "Giorgio Robino <giorgio.robino@gmail.com> (http://convcomp.it/)",
+  "author": {
+    "name": "Giorgio Robino",
+    "email": "giorgio.robino@gmail.com",
+    "url": "https://convcomp.it"
+  },
+  "bin": {
+    "coquihttp": "./examples/httpServer.js"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/solyarisoftware/CoquiSttJs/issues"
   },
-  "homepage": "https://github.com/solyarisoftware/CoquiSttJs#readme"
+  "homepage": "https://github.com/solyarisoftware/CoquiSttJs#readme",
+  "keywords": [
+    "Coqui STT",
+    "DeepSpeech",
+    "Speech Recognition",
+    "Speech to Text",
+    "STT",
+    "ASR",
+    "offline",
+    "nodeJs"
+  ]
 }

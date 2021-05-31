@@ -10,8 +10,8 @@
  * @see master.js 
  *
  */ 
-const { setTimer, getTimer } = require('./chronos')
-const { sendParent, workerData } = require('./threads')
+const { setTimer, getTimer } = require('../lib/chronos')
+const { sendParent, workerData } = require('../lib/threads')
 const { transcriptBuffer, loadModel, freeModel } = require('../stt')
 
 const DEBUG_WORKER = false
