@@ -2,9 +2,4 @@ audio/
 models/
 node_modules/
 venv-stt/
-<<<<<<< HEAD
 tmp/
-=======
-tmp
-
->>>>>>> worker_threads
