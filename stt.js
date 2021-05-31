@@ -13,11 +13,7 @@
 
 const fs = require('fs').promises
 const path = require('path')
-
 const STT = require('stt')
-
-const { runWorker, activeWorkers } = require('./lib/runWorker')
-
 
 /**
  * loadmodel
@@ -26,7 +22,7 @@ const { runWorker, activeWorkers } = require('./lib/runWorker')
  * with specified pbmm and scorer files
  *
  * @function 
- * @sync
+ * @async
  *
  * @param {String} modelPath 
  * @param {String} scorerPath
@@ -37,7 +33,7 @@ const { runWorker, activeWorkers } = require('./lib/runWorker')
  * add metadata object as parameter
  *
  * WARNING
- * The STT Model creation is a syncronous elaboration. 
+ * In facts the STT Model creation is a syncronous elaboration. 
  *
  */
 function loadModel(modelPath, scorerPath) {
@@ -48,14 +44,14 @@ function loadModel(modelPath, scorerPath) {
     model = new STT.Model(modelPath)
   }
   catch (error) { 
-    throw `model.stt error: ${error}`
+    throw (`model.stt: ${error}`) 
   } 
 
   try {
     model.enableExternalScorer(scorerPath)
   }
   catch (error) { 
-    throw `model.enableExternalScorer error: ${error}`
+    throw `model.enableExternalScorer: ${error}`
   } 
 
   return model
@@ -77,7 +73,7 @@ function freeModel(model) {
     STT.FreeModel(model)
   }  
   catch (error) { 
-    throw `STT.FreeModel error: ${error}`
+    throw `STT.FreeModel error: ${error}`  
   } 
 
 }  
@@ -89,22 +85,27 @@ function freeModel(model) {
  * return the speech to text (transcript) 
  * of the audio contained in the specified audio PCM buffer 
  *
- * Runs Coqui STT model.stt on a worker thread 
  * The function is async to avoid the caller thread is blocked
- *
- * @function
- * @async
+ * - during audio file reading
+ * - but especially during the STT engine processing.
  *
  * @param {Buffer}               audioBuffer
- * @param {STTMemoryModelObject} STT model
+ * @param {STTMemoryModelObject} model
  *
- * @return {Promise<String>}     text transcript 
+ * @return {String}              text transcript 
  */ 
-async function transcriptBuffer(audioBuffer, model) {
+function transcriptBuffer(audioBuffer, model) {
+  
+  // WARNING: 
+  // no audioBuffer validation is done.
+  // The audio fle must be a WAV audio in raw format.
 
-  const WORKER_FILENAME = './lib/workerTranscriptBuffer.js'
-
-  return runWorker( WORKER_FILENAME, {audioBuffer, model} )
+  try { 
+    return model.stt(audioBuffer)
+  }
+  catch (error) { 
+    throw `model.stt error: ${error}` 
+  }
 
 }
 
@@ -117,10 +118,7 @@ async function transcriptBuffer(audioBuffer, model) {
  *
  * The function is async to avoid the caller thread is blocked
  * - during audio file reading
- * - during the STT engine processing on a worker thread.
- *
- * @function
- * @async
+ * - but especially during the STT engine processing.
  *
  * @param {String}               audioFile
  * @param {STTMemoryModelObject} model
@@ -138,7 +136,17 @@ async function transcriptFile(audioFile, model) {
     throw `readFile error: ${error}` 
   } 
 
-  return transcriptBuffer(audioBuffer, model) 
+  // WARNING: 
+  // no audioBuffer validation is done.
+  // The audio fle must be a WAV audio in raw format.
+	
+  try { 
+    return model.stt(audioBuffer)
+  }
+  catch (error) { 
+    throw `model.stt error: ${error}`
+  } 
+
 }
 
 
@@ -161,7 +169,7 @@ async function main() {
   const startModel = new Date()
 
   //
-  // load Coqui STT model
+  // load STT model
   //
   const model = loadModel(modelPath, scorerPath)
 
