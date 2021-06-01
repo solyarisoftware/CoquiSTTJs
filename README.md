@@ -86,6 +86,7 @@ Here the current API javascript endpoints:
 
 MIT (c) Giorgio Robino 
 
+If you like the project, please ⭐️ star this repository to show your support! 🙏
 
 ---
 
