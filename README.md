@@ -27,7 +27,7 @@ Here the current API javascript endpoints:
 - `freeModel(model)`
  
 
-## 🎂 Install
+## 📦 Install
 
 ### Install Coqui STT engine, models, audio
 
@@ -66,11 +66,11 @@ Some [usage examples](examples) and [tests](tests/).
 
 ## 🎁 Bonus tracks
 
-[`toPcm`](lib/toPCM.js) fast transcoding to PCM, using ffmpeg process (install ffmpeg before). 
-[`threads`](lib/threads.js) brainless API to use nodejs worker threads (to be completed). 
+- [`toPcm`](lib/toPCM.js) fast transcoding to PCM, using ffmpeg process (install ffmpeg before). 
+- [`threads`](lib/threads.js) brainless API to use nodejs worker threads (to be completed). 
 
 
-## Status 
+## 🧶 Status 
 
 - The project is in a very draft stage.
 - Current Coqui STT npm package solve the DeepSpeech 

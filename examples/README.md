@@ -27,7 +27,7 @@ are all running on a single thread, so the transcript task block the main nodejs
 The single thread behaviour doesn't work for speech to text server applications. 
 In [`thread_transcript.js`](thread_transcript.js)
 a dedicated thread is spawned for each transcript processing. 
-That means that the nodejs main thread is not 'saturated' by the CPU-intensive transcript processing.
+That means that the nodejs main thread is not blocked by the CPU-intensive transcript processing.
 Latency performance will be optimal if your host has at least 2 cores.
 
 ```javascript
@@ -47,6 +47,10 @@ increases the original (single-thread) latency of many tents of milliseconds.
 
 To optimize latencies, instead of running a separate thread for each request, 
 probably a better architeture invole a threading pool. To do.
+
+See also discussion topic 
+[How to use Coqui STT for a text-to-speech server (in NodeJs)](https://github.com/coqui-ai/STT/discussions/1870).
+
 
 ## SocketIO server pseudocode
 

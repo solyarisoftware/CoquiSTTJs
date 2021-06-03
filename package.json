@@ -12,15 +12,17 @@
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.5",
-    "stt": "*"
+    "stt": "^0.10.0-alpha.6"
   },
   "keywords": [
-    "Coqui",
-    "speech",
-    "recognition",
-    "speech-to-text",
+    "Coqui STT",
+    "DeepSpeech",
+    "Speech Recognition",
+    "Speech to Text",
     "STT",
-    "ASR"
+    "ASR",
+    "offline",
+    "nodeJs"
   ],
   "author": {
     "name": "Giorgio Robino",
@@ -34,15 +36,5 @@
   "bugs": {
     "url": "https://github.com/solyarisoftware/CoquiSttJs/issues"
   },
-  "homepage": "https://github.com/solyarisoftware/CoquiSttJs#readme",
-  "keywords": [
-    "Coqui STT",
-    "DeepSpeech",
-    "Speech Recognition",
-    "Speech to Text",
-    "STT",
-    "ASR",
-    "offline",
-    "nodeJs"
-  ]
+  "homepage": "https://github.com/solyarisoftware/CoquiSttJs#readme"
 }
