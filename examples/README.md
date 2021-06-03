@@ -1,53 +1,62 @@
-# VoskJs Usage Examples
+# Usage Examples
 
-- [Simple program for a sentence-based speech-to-text](#simple-program-for-a-sentence-based-speech-to-text)
+- [Simple sentence-based speech-to-text](#simple-sentence-based-speech-to-text)
+- [Multithreading speech-to-text](#multithreading-speech-to-text)
 - [SocketIO server pseudocode](#socketio-server-pseudocode)
-- [`voskjshttp` as RHASSPY speech-to-text remote HTTP Server](#voskjshttp-as-rhasspy-speech-to-text-remote-http-server)
+- [Simple Speech-to-text HTTP Server](#simple-speech-to-text-http-server)
 
-## Simple program for a sentence-based speech-to-text   
+## Simple sentence-based speech-to-text   
 
-[`transcript.js`](transcript.js) is a basic demo using VoskJs functionalities. 
+[`transcript.js`](transcript.js) is a basic demo using Coqui STT. 
 
-The program transcript (recognize, in Vosk parlance) a speech in a wav file, 
-using a specified language model. 
-This is the brainless Vosk interface, perfect for embedded / standalone systems, 
-but also as entry point for any custom server applications.
+The program transcript a speech (from a wav file), 
+using a specified language model and scorer. 
 
-NOTE
-With trascript function default settings, 
+```bash
+$ node transcript.js 2> /dev/null
+transcript: experience proves this (1100ms)
+```
+
+Warning: 
+Coqui STT functions (loading model in memory and the run-time decoding) 
+are all running on a single thread, so the transcript task block the main nodejs thread.
+
+
+## Multithreading speech-to-text
+
+The single thread behaviour doesn't work for speech to text server applications. 
+In [`thread_transcript.js`](thread_transcript.js)
 a dedicated thread is spawned for each transcript processing. 
 That means that the nodejs main thread is not 'saturated' by the CPU-intensive transcript processing.
 Latency performance will be optimal if your host has at least 2 cores.
 
-```bash
-$ node simplest
-```
-```
-model directory      : ../models/vosk-model-en-us-aspire-0.2
-speech file name     : ../audio/2830-3980-0043.wav
-load model latency   : 28439ms
-{
-  result: [
-    { conf: 0.980969, end: 1.02, start: 0.33, word: 'experience' },
-    { conf: 1, end: 1.349919, start: 1.02, word: 'proves' },
-    { conf: 0.997301, end: 1.71, start: 1.35, word: 'this' }
-  ],
-  text: 'experience proves this'
-}
-transcript latency : 471ms
+```javascript
+  const result = await transcriptThread(modelPath, scorerPath, audioBuffer)
 ```
 
+The function `transcriptThread` could be used as enabler 
+to run server (concurrent requests) speech to text platforms.
+
+Warning: 
+Spawning a thread for each transcript request is a sub-optimal first-fit solution, 
+because for each request a separate worker thread is created and ran. 
+The good news is that, due to the smart Coqui STT architecture, the model is loaded in memory once, 
+and the loading elapsed time is afterward just few milliseconds.
+Nevertheless, spawining a thread, loading and freeing the model, 
+increases the original (single-thread) latency of many tents of milliseconds.
+
+To optimize latencies, instead of running a separate thread for each request, 
+probably a better architeture invole a threading pool. To do.
 
 ## SocketIO server pseudocode
 
-HTTP server is not the only way to go! 
-Consider by example a client-server architecture using [socketio](https://socket.io/) 
+Consider a client-server architecture using [socketio](https://socket.io/) 
 websocket-based real-time bidirectional event-based communication library. 
-
 Here below a simplified server-side pseudo-code taht shows how to use voskJs transcript:
 
 ```javascript
-const {transcript, toPCM } = require('voskjs')
+const { transcriptThread } = require('./thread_transcript.js')
+const { toPCM } = require('../toPCM.js')
 const app = require('express')()
 
 // get SSL certificate
@@ -74,12 +83,16 @@ io.on('connection', (socket) => {
     // convert the received audio into a PCM buffer 
     const buffer = toPCM(audioFileCompressed)
 
-    // voskjs speech to text 
-    const voskResult = await transcriptFromBuffer(buffer, model)
+    // Coqui STT speech to text 
+    const result = await transcriptThread(modelPath, scorerPath, buffer)
 
   })
 })
 ```
+
+## Simple speech-to-text HTTP Server
+
+Coming soon.
 
 ---
 

@@ -17,7 +17,8 @@ const { runThread } = require('../lib/threads')
  * transcript a Buffer, using a specified Model and Scorer
  *
  * @function
- * @sync
+ * @public
+ * @async
  *
  * @param {String} modelPath
  * @param {String} scorerPath
@@ -27,20 +28,11 @@ const { runThread } = require('../lib/threads')
  */ 
 async function transcriptThread(modelPath, scorerPath, audioBuffer) { 
 
-  const workerFile = './worker_thread_transcript.js'
+  const workerFile = './thread_transcript_worker.js'
   const workerData = { modelPath, scorerPath, audioBuffer }
 
-  try {
-    setTimer('runThread')
-    
-    // transcript is done in a worker thread
-    const result = await runThread(workerFile, workerData )
-    
-    console.log(`transcript: ${result} (${getTimer('runThread')}ms)`)
-  }  
-  catch (error) {
-    console.error(error) 
-  }  
+  // transcript is done in a worker thread
+  return runThread(workerFile, workerData )
 
 }
 
@@ -60,8 +52,11 @@ async function master() {
   // https://nodejs.org/api/fs.html#fs_file_system_flags
   const audioBuffer = fs.readFileSync(sourceFile, { flag: 'rs+' } )
 
-  await transcriptThread(modelPath, scorerPath, audioBuffer)
+  setTimer('runThread')
 
+  const result = await transcriptThread(modelPath, scorerPath, audioBuffer)
+
+  console.log(`transcript: ${result} (${getTimer('runThread')}ms)`)
 }
 
 

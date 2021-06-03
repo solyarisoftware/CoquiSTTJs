@@ -1,19 +1,22 @@
 # CoquiSTTJs
 
-Coqui STT runtime transcript NodeJs client. With usage examples and tests.
-
+Coqui STT runtime transcript NodeJs client, including multithread (server) usage examples.
 
 ## What's Coqui STT?
 
 [Coqui STT on github](https://github.com/coqui-ai/STT) is an open-source Speech-To-Text engine, project fork of Mozilla DeepSpeech.
-
 Documentation for installation, usage, and training models are available on 
 [Coqui STT documentation](https://stt.readthedocs.io/en/latest/).
 
+Now, you want to access Coqui STT speech to text transcription, from nodeJs. 
+Coqui STT official native NodeJs API:
 
-## Coqui STT run-time transcript, using NodeJs
+- [Native client source code](https://github.com/coqui-ai/STT/tree/main/native_client/javascript)
+- [API Documentation](https://stt.readthedocs.io/en/latest/NodeJS-API.html)
+- [Usage Examples](https://github.com/coqui-ai/STT-examples#javascript)
 
-You want to access Coqui STT speech to text transcription, from nodeJs. 
+
+## ✨ Coqui STT run-time decoding, using NodeJs
 
 This project supplies to nodeJs developers a simple [API interface](stt.js) on top of the Coqui STT native NodeJs binding. 
 Here the current API javascript endpoints:
@@ -52,41 +55,47 @@ Here the current API javascript endpoints:
 ### Install CoquiSTTJs 
 
  ```bash
- npm install coquisttjs 
+ npm install coquisttjs
  ```
 
 
-## Coqui STT official native NodeJs API
+## 🛠 Usage examples and tests
 
-- [Native client source code](https://github.com/coqui-ai/STT/tree/main/native_client/javascript)
-- [API Documentation](https://stt.readthedocs.io/en/latest/NodeJS-API.html)
-- [Usage Examples](https://github.com/coqui-ai/STT-examples#javascript)
+Some [usage examples](examples) and [tests](tests/).
 
 
-## Notes 
+## 🎁 Bonus tracks
 
-- Some latency tests [here](tests/)!
-
-- Current Coqui STT npm package solve the DeepSpeech 
-  [issue](https://github.com/mozilla/DeepSpeech/issues/3642).
-  In facts current npm package `deepspeech` cause a crash using node version 16.0.0.
-  BTW I had success using DeeSpeech npm package with Node version 14.16.1.
+[`toPcm`](lib/toPCM.js) fast transcoding to PCM, using ffmpeg process (install ffmpeg before). 
+[`threads`](lib/threads.js) brainless API to use nodejs worker threads (to be completed). 
 
 
-## 🛠 To do
+## Status 
 
 - The project is in a very draft stage.
+- Current Coqui STT npm package solve the DeepSpeech 
+  [ssue](https://github.com/mozilla/DeepSpeech/issues/3642).
+  In facts current npm package `deepspeech` cause a crash using node version 16.0.0.
+  BTW I had success using DeeSpeech npm package with Node version 14.16.1. 
+  See my project [DeepSpeechJs](https://github.com/solyarisoftware/deepspeechjs).
 - Complete the high-level API interface. E.g. including metadata as parameters
-- Develop a (web) multi-process or multi-thread server architecture. See: 
-  - [How to use Coqui STT for a text-to-speech server (in NodeJs)](https://github.com/coqui-ai/STT/discussions/1870) 
-  - [How to use DeepSpeech for a text-to-speech server (in NodeJs)](https://discourse.mozilla.org/t/how-to-use-deepspeech-for-a-text-to-speech-server-in-nodejs/79636/2)
+
+
+## How to contribute
+
+If you like the project, please ⭐️ star this repository to show your support! 🙏
+
+Any contribute is welcome. 
+- [Discussions](https://github.com/solyarisoftware/voskJs/discussions). 
+  Please open a new discussion (a publich chat on github) for any specific open topic, 
+  for a clarification, change request proposals, etc.
+- [Issues](https://github.com/solyarisoftware/voskJs/issues) Please submit issues for bugs, etc
+- [e-mail](giorgio.robino@gmail.com) You can contact me privately, via email
 
 
 ## License
 
 MIT (c) Giorgio Robino 
-
-If you like the project, please ⭐️ star this repository to show your support! 🙏
 
 ---
 
