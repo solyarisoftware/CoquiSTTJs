@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
-sleepTime=0.5
+sleepTime=0.200
+times=50
 
 # call httpServer every N msecs for 40 times
 
-for i in {1..40}; do
+for i in $( seq 1 $times ); do
+
+
+  clientPOST.sh &
 
   # sleep for N msecs
   sleep $sleepTime
@@ -13,6 +17,9 @@ for i in {1..40}; do
   #sleepTime=`awk 'BEGIN { printf("%.5f", 0.01 + (rand() * 0.1)) }'`
   #sleep $sleepTime
 
-  clientPOST.sh &
-
 done
+
+wait < <(jobs -p)
+echo
+echo "done ($i requests)"
+echo

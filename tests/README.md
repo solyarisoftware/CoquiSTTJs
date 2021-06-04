@@ -1,4 +1,6 @@
-# Latency comparison tests
+# Some tests
+
+## Latency comparison tests
 
 The bash script `testLatencies.sh` compares elapsed times 
 of transcript of the audio file `./audio/4507-16021-0012.wav` 
@@ -120,41 +122,69 @@ Average:     1000     23751  111,00   10,00    0,00    0,00  121,00     -  node
 
 ```
 
-## Record audio files
 
-Coqui STT requires a 16bit 16 KHz mono WAV input audio file.
+## httpServer crash test
+
+client side:
+
 ```
-sudo apt install sox
-sudo apt install mediainfo
+$ clientNearRequests.sh
 ```
 
-To record such a file:
-```
-rec -f S16_BE -r 16000 -c 1 my_recording.wav
-```
-```
-mediainfo my_recording.wav
-```
-```
-General
-Complete name                            : my_recording.wav
-Format                                   : Wave
-File size                                : 64.0 KiB
-Duration                                 : 2 s 48 ms
-Overall bit rate mode                    : Constant
-Overall bit rate                         : 256 kb/s
+server side:
 
-Audio
-Format                                   : PCM
-Format settings                          : Little / Signed
-Codec ID                                 : 1
-Duration                                 : 2 s 48 ms
-Bit rate mode                            : Constant
-Bit rate                                 : 256 kb/s
-Channel(s)                               : 1 channel
-Sampling rate                            : 16.0 kHz
-Bit depth                                : 16 bits
-Stream size                              : 64.0 KiB (100%)
+```
+$ node httpServer.js  --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer
+```
+```
+1622822286076 package coquisttjs version 0.0.14, Coqui STT version 0.10.0-alpha.6
+1622822286079 Model name: ../models/coqui-stt-0.9.3-models.pbmm
+1622822286079 Scorer name: ../models/coqui-stt-0.9.3-models.scorer
+1622822286079 HTTP server port: 3000
+1622822286079 HTTP server path: /transcript
+1622822286081 server httpServer.js running at http://localhost:3000
+1622822286081 endpoint http://localhost:3000/transcript
+1622822286082 press Ctrl-C to shutdown
+1622822286082 ready to listen incoming requests
+1622822288388 request POST 1622822288388 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+2021-06-04 17:58:08.468751: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN)to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+1622822288567 request POST 1622822288567 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822288767 request POST 1622822288767 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822288979 request POST 1622822288979 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822289183 request POST 1622822289183 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822289380 request POST 1622822289380 speechBuffer
+1622822289592 request POST 1622822289592 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822289798 request POST 1622822289798 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822290000 request POST 1622822290000 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822290214 request POST 1622822290214 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822290430 request POST 1622822290430 speechBuffer
+1622822290634 request POST 1622822290634 speechBuffer
+1622822290830 request POST 1622822290830 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+1622822291040 request POST 1622822291040 speechBuffer
+TensorFlow: v2.3.0-6-g23ad988fcde
+ Coqui STT: v0.10.0-alpha.4-78-g1f3d2dab
+Segmentation fault (core dumped)
 ```
 
 ---

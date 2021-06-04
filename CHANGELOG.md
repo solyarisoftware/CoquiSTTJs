@@ -1,6 +1,7 @@
 # Changelog
 
-- 0.0.14
+- 0.0.15
+  - client/server tests added. The server crashes.
   - added httpServer example
 
 - 0.0.13
