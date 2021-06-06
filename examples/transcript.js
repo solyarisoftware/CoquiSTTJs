@@ -20,28 +20,27 @@ function transcriptNoThread(modelPath, scorerPath, audioBuffer) {
 
   let result
 
-  setTimer('worker')
+  const loadModelTime = setTimer()
 
   //
   // load Coqui STT model
   //
-  setTimer('loadModel')
 
   const model = loadModel(modelPath, scorerPath)
   
   if (DEBUG_WORKER)
-    console.log(`worker: load model elapsed: ${getTimer('loadModel')}ms`)
+    console.log(`worker: load model elapsed: ${getTimer(loadModelTime)}ms`)
 
   //
   // transcript the audio buffer
   //
   try { 
-    setTimer('transcriptBuffer')
+    const transcriptBufferTime = setTimer()
     
     result = transcriptBuffer(audioBuffer, model)
     
     if (DEBUG_WORKER)
-      console.log(`worker: transcriptBuffer elapsed: ${getTimer('transcriptBuffer')}ms`)
+      console.log(`worker: transcriptBuffer elapsed: ${getTimer(transcriptBufferTime)}ms`)
   }  
   catch (error) { 
     throw `transcriptBuffer: ${error}` 
@@ -50,12 +49,12 @@ function transcriptNoThread(modelPath, scorerPath, audioBuffer) {
   //
   // free the model
   //
-  setTimer('freeModel')
+  const freeModelTime = setTimer()
   
   freeModel(model)
     
   if (DEBUG_WORKER)
-    console.log(`worker: free model elapsed: ${getTimer('freeModel')}ms`)
+    console.log(`worker: free model elapsed: ${getTimer(freeModelTime)}ms`)
   
   if (DEBUG_WORKER)
    console.log(`worker: total elapsed: ${getTimer('worker')}ms`)
@@ -75,11 +74,11 @@ function main() {
   // https://nodejs.org/api/fs.html#fs_file_system_flags
   const audioBuffer = fs.readFileSync(sourceFile, { flag: 'rs+' } )
   
-  setTimer('transcriptTask')
+  const transcriptTaskTime = setTimer()
 
   const result = transcriptNoThread(modelPath, scorerPath, audioBuffer)
   
-  console.log(`transcript: ${result} (${getTimer('transcriptTask')}ms)`)
+  console.log(`transcript: ${result} (${getTimer(transcriptTaskTime)}ms)`)
 }  
 
 

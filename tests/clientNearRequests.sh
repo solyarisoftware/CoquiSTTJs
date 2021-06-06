@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-sleepTime=0.200
+sleepTime=0.100
 times=50
 
 # call httpServer every N msecs for 40 times

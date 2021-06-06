@@ -52,11 +52,11 @@ async function master() {
   // https://nodejs.org/api/fs.html#fs_file_system_flags
   const audioBuffer = fs.readFileSync(sourceFile, { flag: 'rs+' } )
 
-  setTimer('runThread')
+  const runThreadTime = setTimer()
 
   const result = await transcriptThread(modelPath, scorerPath, audioBuffer)
 
-  console.log(`transcript: ${result} (${getTimer('runThread')}ms)`)
+  console.log(`transcript: ${result} (${getTimer(runThreadTime)}ms)`)
 }
 
 

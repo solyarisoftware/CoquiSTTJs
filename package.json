@@ -1,7 +1,7 @@
 {
   "name": "coquisttjs",
   "description": "Coqui STT runtime transcript NodeJs client, including multithread (server) usage examples.",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "stt.js",
   "scripts": {
     "test": "tests/testPerformances.js"
@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.5",
+    "express": "^4.17.1",
     "stt": "^0.10.0-alpha.6"
   },
   "keywords": [

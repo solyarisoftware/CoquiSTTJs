@@ -12,19 +12,43 @@
 const { sendToParent, workerData } = require('../lib/threads')
 const { transcriptNoThread } = require('./transcript.js')
 
-// 
-// take parameters from main/parent thread
-//
-const { modelPath, scorerPath, audioBuffer } = workerData 
+function worker() {
 
-// 
-// the function is called when the thread is created
-//
-const result = transcriptNoThread(modelPath, scorerPath, audioBuffer)
+  // 
+  // take parameters from main/parent thread
+  //
+  const { modelPath, scorerPath, audioBuffer } = workerData 
 
-// 
-// communicate result to main thread
-//
-sendToParent(result)
+  // 
+  // the function is called when the thread is created
+  //
+  const result = transcriptNoThread(modelPath, scorerPath, audioBuffer)
+  
+  // 
+  // communicate result to main thread
+  //
+  sendToParent(result)
+}
+
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+
+async function fakeWorker() {
+
+  await sleep(2000)
+  
+  const result = 'abracadabra'
+
+  // 
+  // communicate result to main thread
+  //
+  sendToParent(result)
+}
+
+//fakeWorker()
+worker()
 
 // end of worker thread

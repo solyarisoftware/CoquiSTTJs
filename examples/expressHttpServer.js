@@ -1,18 +1,17 @@
 #!/usr/bin/env node
 
 const path = require('path')
-const http = require('http')
-const url = require('url')
+const express = require('express')
 
-const { transcriptThread } = require('./thread_transcript')
 const { getArgs } = require('../lib/getArgs')
-const { unixTimeMsecs, setTimer, getTimer } = require('../lib/chronos')
 const { log } = require('../lib/log')
 const { info } = require('../lib/info')
+const { unixTimeMsecs, setTimer, getTimer } = require('../lib/chronos')
+
+const { transcriptThread } = require('./thread_transcript')
 
 const HTTP_PATH = '/transcript'
 const HTTP_PORT = 3000
-
 
 /**
  * Module global variables
@@ -93,6 +92,15 @@ function validateArgs(args, programName) {
 }
 
 
+function shutdown(signal) {
+
+  log(`${signal} received`)
+  
+  log('Shutdown done')
+  
+  process.exit(0)
+}  
+
 
 /**
  * errorResponse
@@ -130,100 +138,10 @@ function successResponse(requestId, json, res) {
 }
 
 
-/**
- * get request body
- *
- * @function
- * @async
- * 
- * @param {Object}           req
- * @return {Promise<Buffer>}
- */ 
-function getRequestBody(req) {
-  return new Promise( (resolve) => {
-
-    let speechAsBuffer = Buffer.alloc(0) 
-    
-    req.on('data', (chunk) => speechAsBuffer = Buffer.concat([speechAsBuffer, chunk]) )
-
-    // all the body is received 
-    req.on('end', () => resolve(speechAsBuffer) )
-
-  })
-}  
-
-
-async function requestListener(req, res) {
-
-  //if ( !req.url.match(/^\/transcript/) )
-  if ( !req.url.match(pathRegexp) )
-    return errorResponse(`path not allowed ${req.url}`, 405, res)
-
-  //
-  // if request header accept attribute is 'text/plain'
-  // response body is text, otherwise
-  // response body is 'application/json'
-  //
-  const requestAcceptText = (req.headers.accept === 'text/plain') ? true : false
-
-  // HTTP POST /transcript
-  if (req.method === 'POST') {
-    
-    // get request headers attribute: "content-type" 
-    const { 'content-type': contentType } = req.headers
-
-    if (debug)
-      log(`request POST content type ${contentType}`, 'DEBUG')
-
-    // get request query string arguments
-    const queryObject = url.parse(req.url,true).query
-
-    const requestedModelName = queryObject.model 
-    const requestedScorerName = queryObject.scorer 
-    const requestedId = queryObject.id 
-  
-    // set id to the is query string argument 
-    // if id argument is not present in the quesy string, 
-    // set the id with current timestamp in msecs.
-    const currentTime = unixTimeMsecs()
-    const id = requestedId ? requestedId : currentTime
-
-    // log POST request  
-    log(`request POST ${id} ${'speechBuffer'} ${requestedModelName? requestedModelName: ''} ${requestedScorerName? requestedScorerName: ''}`, null, currentTime)
-
-    /*
-    // TODO
-    // if query arguments "model" and "scorer" are specified in the client request,
-    // they must be equal to the model name and the scorer name loaded by the server
-    if ( requestedModelName && (requestedModelName !== modelName) ) 
-      return errorResponse(`id ${id} model ${requestedModelName} unknown`, 404, res)
-
-    if ( requestedScorerName && (requestedScorerName !== scorerName) ) 
-      return errorResponse(`id ${id} scorer ${requestedScorerName} unknown`, 404, res)
-    */
-
-    // get request body binary data, containing speech WAV file 
-    // TODO Validation of body
-    
-    setTimer('attachedFile')
-
-    const speechAsBuffer = await getRequestBody(req)
-    
-    if (debug) 
-      log(`HTTP POST attached file elapsed ${getTimer('attachedFile')}ms`, 'DEBUG')
-
-    return responseTranscriptPost(id, speechAsBuffer, modelName, scorerName, requestAcceptText, res)
-    
-  }
-  
-  // all other HTTP methods 
-  else
-    return errorResponse(`method not allowed ${req.method}`, 405, res)
-
-}  
-
-
 async function responseTranscriptPost(id, buffer, model, scorer, acceptText, res) {
+
+  // log POST request  
+  log(`request POST ${id} ${'speechBuffer'} ${model} ${scorer}`)
 
   if (debug) 
     log(`Body Buffer length ${Buffer.byteLength(buffer)}`)
@@ -236,11 +154,10 @@ async function responseTranscriptPost(id, buffer, model, scorer, acceptText, res
       log(`active requests ${activeRequests}`, 'DEBUG')
     }
 
-    setTimer('transcript')
+    const transcriptTime = setTimer()
 
     // speech recognition of an audio file
     const result = await transcriptThread( model, scorer, buffer )
-    //const result = 'abracadabra'
 
     if (debug) {
       // thread finished, decrement global counter of active thread running
@@ -248,7 +165,7 @@ async function responseTranscriptPost(id, buffer, model, scorer, acceptText, res
       log(`active requests ${activeRequests}`, 'DEBUG')
     }  
 
-    const latency = getTimer('transcript')
+    const latency = getTimer(transcriptTime)
 
     if (debug)
       log(`latency ${id} ${latency}ms`, 'DEBUG')
@@ -267,23 +184,13 @@ async function responseTranscriptPost(id, buffer, model, scorer, acceptText, res
 }  
 
 
-function shutdown(signal) {
-
-  log(`${signal} received`)
-  
-  log('Shutdown done')
-  
-  process.exit(0)
-}  
-
-
 async function main() {
 
   // get command line arguments 
   const { args } = getArgs()
   
   //const programName = path.basename(__filename, '.js')
-  const programName = 'httpServer' 
+  const programName = 'expressHttpServer' 
 
   const validatedArgs = validateArgs(args, programName )
   const { serverPort, serverPath } = validatedArgs
@@ -299,27 +206,39 @@ async function main() {
   log(`HTTP server port: ${serverPort}`)
   log(`HTTP server path: ${serverPath}`)
 
-  /*
-  log(`wait loading Coqui STT model ${modelName} and scorer ${scorerName}scorer. Be patient)`);
-  setTimer('loadModel')
+  const app = express()
 
-  // create a Coqui STT runtime model
-  model = loadModel(modelDirectory)
+  app.use(express.raw({ type: '*/*' }))
 
-  log(`Coqui STT model loaded in ${getTimer('loadModel')} msecs`)
-  */
+  app.post( serverPath, async (req, res) => {
+    
 
-  // create the HTTP server instance
-  const server = http.createServer( async (req, res) => requestListener(req, res) )
+    // set id to the is query string argument 
+    // if id argument is not present in the quesy string, 
+    // set the id with current timestamp in msecs.
+    const currentTime = unixTimeMsecs()
+    //const id = requestedId ? requestedId : currentTime
+    const id = currentTime
 
-  // listen incoming client requests
-  server.listen( serverPort, () => {
-    log(`server ${path.basename(__filename)} running at http://localhost:${serverPort}`)
-    log(`endpoint http://localhost:${serverPort}${serverPath}`)
-    log('press Ctrl-C to shutdown')
-    log('ready to listen incoming requests')
+    
+    const requestAcceptText = false 
+    const speechAsBuffer = req.body
+
+    await responseTranscriptPost(id, speechAsBuffer, modelName, scorerName, requestAcceptText, res)
+
+    //console.log(req.body);
+    // res.end();
   })
-  
+
+  app.listen(HTTP_PORT, (err) => {
+    if (!err) {
+      log(`server ${path.basename(__filename)} running at http://localhost:${serverPort}`)
+      log(`endpoint http://localhost:${serverPort}${serverPath}`)
+      log('press Ctrl-C to shutdown')
+      log('ready to listen incoming requests')
+    }  
+  })
+
   // shutdown management
   process.on('SIGTERM', shutdown )
   process.on('SIGINT', shutdown )
@@ -333,7 +252,6 @@ async function main() {
       shutdown('uncaughtException')
   })
   
-
 }
 
 main()
