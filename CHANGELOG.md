@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.0.17
+  - thread workers create a segmentation violation.
+  - The issue is solved substituting worker threads with forked processes.
+ 
 - 0.0.15
   - client/server tests added. The server crashes.
   - added httpServer example

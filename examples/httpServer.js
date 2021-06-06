@@ -4,7 +4,7 @@ const path = require('path')
 const http = require('http')
 const url = require('url')
 
-const { transcriptThread } = require('./thread_transcript')
+const { transcriptProcess } = require('./process_transcript')
 const { getArgs } = require('../lib/getArgs')
 const { unixTimeMsecs, setTimer, getTimer } = require('../lib/chronos')
 const { log } = require('../lib/log')
@@ -205,12 +205,12 @@ async function requestListener(req, res) {
     // get request body binary data, containing speech WAV file 
     // TODO Validation of body
     
-    setTimer('attachedFile')
+    const attachedFileTime = setTimer()
 
     const speechAsBuffer = await getRequestBody(req)
     
     if (debug) 
-      log(`HTTP POST attached file elapsed ${getTimer('attachedFile')}ms`, 'DEBUG')
+      log(`HTTP POST attached file elapsed ${getTimer(attachedFileTime)}ms`, 'DEBUG')
 
     return responseTranscriptPost(id, speechAsBuffer, modelName, scorerName, requestAcceptText, res)
     
@@ -236,11 +236,10 @@ async function responseTranscriptPost(id, buffer, model, scorer, acceptText, res
       log(`active requests ${activeRequests}`, 'DEBUG')
     }
 
-    setTimer('transcript')
+    const transcriptTime = setTimer()
 
     // speech recognition of an audio file
-    const result = await transcriptThread( model, scorer, buffer )
-    //const result = 'abracadabra'
+    const result = await transcriptProcess( model, scorer, buffer )
 
     if (debug) {
       // thread finished, decrement global counter of active thread running
@@ -248,7 +247,7 @@ async function responseTranscriptPost(id, buffer, model, scorer, acceptText, res
       log(`active requests ${activeRequests}`, 'DEBUG')
     }  
 
-    const latency = getTimer('transcript')
+    const latency = getTimer(transcriptTime)
 
     if (debug)
       log(`latency ${id} ${latency}ms`, 'DEBUG')
