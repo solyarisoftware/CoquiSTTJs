@@ -61,13 +61,14 @@ Here the current API javascript endpoints:
 
 ## 🛠 Usage examples and tests
 
-Some [usage examples](examples) and [tests](tests/).
+Some [usage examples](examples) and [tests](tests/). Examples include
+- `coquihttp` HTTP Server
+- The above server could be configured acting as RHASSPY HTTP Remote Server
 
 
 ## 🎁 Bonus tracks
 
 - [`toPcm`](lib/toPCM.js) fast transcoding to PCM, using ffmpeg process (install ffmpeg before). 
-- [`threads`](lib/threads.js) brainless API to use nodejs worker threads (to be completed). 
 
 
 ## 🧶 Status 
@@ -90,7 +91,7 @@ Any contribute is welcome.
   Please open a new discussion (a publich chat on github) for any specific open topic, 
   for a clarification, change request proposals, etc.
 - [Issues](https://github.com/solyarisoftware/voskJs/issues) Please submit issues for bugs, etc
-- [e-mail](giorgio.robino@gmail.com) You can contact me privately, via email
+- [e-mail](giorgio.robino@gmail.com) You can contact me privately, via email.
 
 
 ## License

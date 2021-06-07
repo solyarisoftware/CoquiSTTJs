@@ -1,7 +1,12 @@
 # Changelog
 
+- 0.0.18
+  - workerThread ubstituted with forked processes.
+  - documenattion updated
+  - coquihttp also configurable to be used as RHASSPY rempte HTTP Server
+
 - 0.0.17
-  - thread workers create a segmentation violation.
+  - workerThreads create a segmentation violation.
   - The issue is solved substituting worker threads with forked processes.
  
 - 0.0.15

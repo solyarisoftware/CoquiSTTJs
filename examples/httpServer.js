@@ -120,7 +120,7 @@ function responseJson(id, latency, result, res) {
 
 function responseText(result, res) {
   res.setHeader('Content-Type', 'text/plain')
-  return result.text 
+  return result 
 }  
 
 
