@@ -24,7 +24,7 @@ are all running on a single thread, so the transcript task block the main nodejs
 
 ## Simple speech-to-text HTTP Server
 
-[`coquiHttp.js`](coquiHttp.js) is a very simple HTTP API server 
+[`coquihttp.js`](coquihttp.js) is a very simple HTTP API server 
 that can process concurrent/multi-user transcript requests, 
 using specified language model/scorer.
 
@@ -38,7 +38,7 @@ Currently the server support just a single endpoint:
 Server settings:
 
 ```bash
-$ cd examples && node coquiHttp.js 
+$ cd examples && node coquihttp.js 
 ```
 or, if you installed this package as global:
 ```bash
@@ -56,7 +56,7 @@ The server has the endpoint:
 
 Usage:
 
-  coquiHttp --model=<model file>.pbmm> \ 
+  coquihttp --model=<model file>.pbmm> \ 
                  --scorer=<scorer file>.scorer> \ 
                 [--port=<server port number. Default: 3000>] \ 
                 [--path=<server endpoint path. Default: /transcript>] \ 
@@ -64,7 +64,7 @@ Usage:
 Server settings example:
 
   stdout includes minimal info, default port number is 3000
-  node coquiHttp --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer
+  node coquihttp --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer
 
 Client requests examples:
 
@@ -81,7 +81,7 @@ Client requests examples:
 Server run example:
 
 ```bash
-$ node coquiHttp.js  --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer 2> /dev/null
+$ node coquihttp.js  --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer 2> /dev/null
 ```
 
 - Client call example:
@@ -115,7 +115,7 @@ $ node coquiHttp.js  --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../m
   1623054527780 Scorer name: ../models/coqui-stt-0.9.3-models.scorer
   1623054527780 HTTP server port: 3000
   1623054527780 HTTP server path: /transcript
-  1623054527781 server coquiHttp.js running at http://localhost:3000
+  1623054527781 server coquihttp.js running at http://localhost:3000
   1623054527782 endpoint http://localhost:3000/transcript
   1623054527782 press Ctrl-C to shutdown
   1623054527782 ready to listen incoming requests
