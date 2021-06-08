@@ -1,6 +1,7 @@
 # Usage Examples
 
 - [Simple sentence-based speech-to-text](#simple-sentence-based-speech-to-text)
+
 - [`coquihttp` A simple Speech-to-text HTTP Server](#simple-speech-to-text-http-server)
 - [`coquihttp` as RHASSPY speech-to-text remote HTTP Server](#coquihttp-as-rhasspy-speech-to-text-remote-http-server)
 - [SocketIO server pseudocode](#socketio-server-pseudocode)
@@ -23,7 +24,7 @@ are all running on a single thread, so the transcript task block the main nodejs
 
 ## Simple speech-to-text HTTP Server
 
-[`httpServer.js`](httpServer.js) is a very simple HTTP API server 
+[`coquiHttp.js`](coquiHttp.js) is a very simple HTTP API server 
 that can process concurrent/multi-user transcript requests, 
 using specified language model/scorer.
 
@@ -37,7 +38,7 @@ Currently the server support just a single endpoint:
 Server settings:
 
 ```bash
-$ cd examples && node httpServer.js 
+$ cd examples && node coquiHttp.js 
 ```
 or, if you installed this package as global:
 ```bash
@@ -55,7 +56,7 @@ The server has the endpoint:
 
 Usage:
 
-  httpServer --model=<model file>.pbmm> \ 
+  coquiHttp --model=<model file>.pbmm> \ 
                  --scorer=<scorer file>.scorer> \ 
                 [--port=<server port number. Default: 3000>] \ 
                 [--path=<server endpoint path. Default: /transcript>] \ 
@@ -63,7 +64,7 @@ Usage:
 Server settings example:
 
   stdout includes minimal info, default port number is 3000
-  node httpServer --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer
+  node coquiHttp --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer
 
 Client requests examples:
 
@@ -80,7 +81,7 @@ Client requests examples:
 Server run example:
 
 ```bash
-$ node httpServer.js  --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer 2> /dev/null
+$ node coquiHttp.js  --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../models/coqui-stt-0.9.3-models.scorer 2> /dev/null
 ```
 
 - Client call example:
@@ -98,9 +99,11 @@ $ node httpServer.js  --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../
   The JSON returned by the transcript endpoint: 
   ```
   {
-      "id": 1623054530648,
-      "latency": 1099,
-      "result": "experience proves this"
+    "id": 1623159640590,
+    "latency": 1156,
+    "duration": 1976,
+    "rtf": 0.59,
+    "text": "experience proves this"
   }
   ```
 
@@ -112,7 +115,7 @@ $ node httpServer.js  --model=../models/coqui-stt-0.9.3-models.pbmm --scorer=../
   1623054527780 Scorer name: ../models/coqui-stt-0.9.3-models.scorer
   1623054527780 HTTP server port: 3000
   1623054527780 HTTP server path: /transcript
-  1623054527781 server httpServer.js running at http://localhost:3000
+  1623054527781 server coquiHttp.js running at http://localhost:3000
   1623054527782 endpoint http://localhost:3000/transcript
   1623054527782 press Ctrl-C to shutdown
   1623054527782 ready to listen incoming requests
@@ -241,9 +244,11 @@ Following these specifications:
      ```
      ```
      {
-         "id": 1623055471562,
-         "latency": 1115,
-         "result": "experience proves this"
+       "id": 1623159640590,
+       "latency": 1156,
+       "duration": 1976,
+       "rtf": 0.59,
+       "text": "experience proves this"
      }
      ```
 
@@ -255,8 +260,8 @@ websocket-based real-time bidirectional event-based communication library.
 Here below a simplified server-side pseudo-code taht shows how to use coquisttjs transcript:
 
 ```javascript
-const { transcriptProcess } = require('./process_transcript.js')
-const { toPCM } = require('../toPCM.js')
+const { transcriptProcess } = require('./process_transcript')
+const { toPCM } = require('../audioutils')
 const app = require('express')()
 
 // get SSL certificate

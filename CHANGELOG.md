@@ -1,5 +1,9 @@
 # Changelog
 
+- 0.1.0
+  - httpServer renamed coquihttp 
+  - coquihttp JSON response updated. attribute result is now called text. Added attributes rtf, duration.
+
 - 0.0.18
   - workerThread ubstituted with forked processes.
   - documenattion updated

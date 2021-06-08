@@ -61,21 +61,24 @@ Here the current API javascript endpoints:
 
 ## 🛠 Usage examples and tests
 
-Some [usage examples](examples) and [tests](tests/). Examples include
-- `coquihttp` HTTP Server
-- The above server could be configured acting as RHASSPY HTTP Remote Server
+Some [usage examples](examples) and [tests](tests/). Examples include:
+
+- [Simple sentence-based speech-to-text](examples/README.md#simple-sentence-based-speech-to-text)
+- [`coquihttp` A simple Speech-to-text HTTP Server](examples/README.md#simple-speech-to-text-http-server)
+- [`coquihttp` as RHASSPY speech-to-text remote HTTP Server](examples/README.md#coquihttp-as-rhasspy-speech-to-text-remote-http-server)
+- [SocketIO server pseudocode](examples/README.md#socketio-server-pseudocode)
 
 
 ## 🎁 Bonus tracks
 
-- [`toPcm`](lib/toPCM.js) fast transcoding to PCM, using ffmpeg process (install ffmpeg before). 
+- [`audioutils.js`](lib/audioutils.js) fast transcoding to PCM, using ffmpeg process (install ffmpeg before). 
 
 
 ## 🧶 Status 
 
 - The project is in a very draft stage.
 - Current Coqui STT npm package solve the DeepSpeech 
-  [ssue](https://github.com/mozilla/DeepSpeech/issues/3642).
+  [issue](https://github.com/mozilla/DeepSpeech/issues/3642).
   In facts current npm package `deepspeech` cause a crash using node version 16.0.0.
   BTW I had success using DeeSpeech npm package with Node version 14.16.1. 
   See my project [DeepSpeechJs](https://github.com/solyarisoftware/deepspeechjs).

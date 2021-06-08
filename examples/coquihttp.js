@@ -7,6 +7,7 @@ const url = require('url')
 const { transcriptProcess } = require('./process_transcript')
 const { getArgs } = require('../lib/getArgs')
 const { unixTimeMsecs, setTimer, getTimer } = require('../lib/chronos')
+const { rtf, duration } = require('../lib/audioutils')
 const { log } = require('../lib/log')
 const { info } = require('../lib/info')
 
@@ -29,7 +30,7 @@ function helpAndExit(programName) {
   console.log('Simple demo HTTP JSON server, loading a Coqui STT engine model to transcript speeches.')
   console.log( info() )
   console.log()
-  console.log('The server has the endpoint:')
+  console.log('The server has a single endpoint:')
   console.log()
   console.log('  HTTP POST /transcript')
   console.log('  The request query string arguments contain parameters,')
@@ -107,20 +108,22 @@ function errorResponse(message, statusCode, res) {
 
 
 // return JSON data structure
-function responseJson(id, latency, result, res) {
+function responseJson(id, latency, text, rtf, duration, res) {
   res.setHeader('Content-Type', 'application/json')
   return JSON.stringify({
     //... { request: JSON.stringify(queryObject) },
     ... { id },
     ... { latency },
-    ... { result } 
+    ... { duration },
+    ... { rtf },
+    ... { text } 
     })
 }  
 
 
-function responseText(result, res) {
+function responseText(text, res) {
   res.setHeader('Content-Type', 'text/plain')
-  return result 
+  return text 
 }  
 
 
@@ -239,7 +242,7 @@ async function responseTranscriptPost(id, buffer, model, scorer, acceptText, res
     const transcriptTime = setTimer()
 
     // speech recognition of an audio file
-    const result = await transcriptProcess( model, scorer, buffer )
+    const text = await transcriptProcess( model, scorer, buffer )
 
     if (debug) {
       // thread finished, decrement global counter of active thread running
@@ -249,12 +252,18 @@ async function responseTranscriptPost(id, buffer, model, scorer, acceptText, res
 
     const latency = getTimer(transcriptTime)
 
+    // audio length in milliseconds
+    const durationMsecs = Math.floor(duration(buffer) * 1000)
+
+    // calculate realtime factor
+    const realtimeFactor = rtf(latency, durationMsecs) 
+
     if (debug)
       log(`latency ${id} ${latency}ms`, 'DEBUG')
     
     const body = acceptText ? 
-      responseText(result, res) : 
-      responseJson(id, latency, result, res)
+      responseText(text, res) : 
+      responseJson(id, latency, text, realtimeFactor, durationMsecs, res)
 
     return successResponse(id, body, res)
 
